@@ -1,244 +1,306 @@
 package udistrital.avanzada.pacman_servidor.controlador;
 
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.SQLException;
 import java.util.Map;
-import javax.swing.JOptionPane;
-import udistrital.avanzada.pacman_servidor.conexion.ArchivoResultadosManager;
-import udistrital.avanzada.pacman_servidor.conexion.ConexionBD;
-import udistrital.avanzada.pacman_servidor.dao.UsuarioDAO;
-import udistrital.avanzada.pacman_servidor.dao.UsuarioDAOImpl;
+import udistrital.avanzada.pacman_servidor.conexion.*;
+import udistrital.avanzada.pacman_servidor.dao.*;
 import udistrital.avanzada.pacman_servidor.modelo.RegistroJuego;
-import udistrital.avanzada.pacman_servidor.util.ConfiguracionServidor;
-import udistrital.avanzada.pacman_servidor.vista.VentanaServidor;
+import udistrital.avanzada.pacman_servidor.util.*;
+import udistrital.avanzada.pacman_servidor.vista.PanelJuego;
+import udistrital.avanzada.pacman_servidor.vista.VentanaJuego;
 
 /**
  * Controlador principal del servidor.
- * Gestiona el ServerSocket, acepta clientes y coordina toda la lógica del servidor.
- * Aplica el patrón MVC: separa lógica de control de vista y modelo.
+ * Orquesta TODA la aplicación: vista, modelo, BD, sockets.
+ * Es la VERTEBRA CENTRAL del sistema.
  * 
- * @author Steban
+ * @author [Tu Nombre]
  * @version 1.0
  */
 public class ControladorServidor {
     
-    private VentanaServidor vista;
-    private ServerSocket serverSocket;
-    private ConfiguracionServidor configuracion;
+    // Controladores especializados
+    private ControladorVista controladorVista;
+    private ControladorModelo controladorModelo;
+    
+    // Configuración
+    private ConfiguracionServidor config;
+    
+    // Conexiones
     private ConexionBD conexionBD;
     private UsuarioDAO usuarioDAO;
-    private ArchivoResultadosManager archivoResultados;
+    private ArchivoResultadosManager archivoManager;
+    
+    // Servidor
+    private ServerSocket serverSocket;
     private boolean servidorActivo;
-    private int contadorClientes;
     
     /**
-     * Constructor del controlador.
-     * Aplica inyección de dependencias.
-     * 
-     * @param vista Ventana del servidor
+     * Constructor que inicializa los controladores especializados.
      */
-    public ControladorServidor(VentanaServidor vista) {
-        this.vista = vista;
+    public ControladorServidor() {
+        this.controladorVista = new ControladorVista();
+        this.controladorModelo = new ControladorModelo();
         this.servidorActivo = false;
-        this.contadorClientes = 0;
     }
     
     /**
-     * Inicializa el servidor con la configuración cargada.
-     * Conecta a BD, carga usuarios y levanta ServerSocket.
-     * 
-     * @param configuracion Configuración cargada del archivo properties
+     * Inicia la aplicación del servidor.
      */
-    public void inicializarServidor(ConfiguracionServidor configuracion) {
-        this.configuracion = configuracion;
+    public void iniciar() {
+        // Crear y mostrar ventana de inicio
+        controladorVista.crearVentanaInicio();
+        configurarListenersVentanaInicio();
+        controladorVista.mostrarVentanaInicio();
         
+        controladorVista.agregarLog("=== Servidor Pac-Man Iniciado ===");
+        controladorVista.agregarLog("Esperando configuración...");
+    }
+    
+    /**
+     * Configura los listeners de la ventana de inicio.
+     */
+    private void configurarListenersVentanaInicio() {
+        // Listener para seleccionar properties
+        controladorVista.getVentanaInicio().getBtnSeleccionarProperties()
+            .addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    seleccionarArchivoProperties();
+                }
+            });
+        
+        // Listener para iniciar servidor
+        controladorVista.getVentanaInicio().getBtnIniciarServidor()
+            .addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    iniciarServidor();
+                }
+            });
+    }
+    
+    /**
+     * Permite seleccionar el archivo properties con JFileChooser.
+     */
+    private void seleccionarArchivoProperties() {
+        JFileChooser chooser = new JFileChooser();
+        chooser.setDialogTitle("Seleccionar archivo de configuración");
+        
+        int resultado = chooser.showOpenDialog(controladorVista.getVentanaInicio());
+        
+        if (resultado == JFileChooser.APPROVE_OPTION) {
+            File archivo = chooser.getSelectedFile();
+            cargarConfiguracion(archivo);
+        }
+    }
+    
+    /**
+     * Carga la configuración desde el archivo.
+     * 
+     * @param archivo Archivo properties
+     */
+    private void cargarConfiguracion(File archivo) {
         try {
+            config = new ConfiguracionServidor();
+            config.cargarDesdeArchivo(archivo);
+            
+            controladorVista.agregarLog("Configuración cargada: " + archivo.getName());
+            controladorVista.agregarLog("Puerto: " + config.getPuerto());
+            controladorVista.agregarLog("Base de datos: " + config.getDBUrl());
+            
             // Inicializar conexión a BD
-            inicializarBaseDatos();
+            inicializarBaseDeDatos();
             
             // Inicializar archivo de resultados
-            String rutaArchivo = configuracion.getRutaArchivoResultados();
-            this.archivoResultados = new ArchivoResultadosManager(rutaArchivo);
-            vista.mostrarMensaje("Archivo de resultados inicializado: " + rutaArchivo);
+            archivoManager = new ArchivoResultadosManager(config.getRutaArchivoResultados());
+            controladorVista.agregarLog("Archivo de resultados: " + config.getRutaArchivoResultados());
             
-            // Cargar usuarios precargados en BD
-            cargarUsuariosPrecargados();
+            // Habilitar botón de iniciar
+            controladorVista.habilitarBotonIniciar(true);
+            controladorVista.actualizarEstado("Configuración lista");
             
-            // Levantar ServerSocket
-            int puerto = configuracion.getPuerto();
+        } catch (IOException e) {
+            controladorVista.agregarLog("ERROR: No se pudo cargar la configuración");
+            JOptionPane.showMessageDialog(controladorVista.getVentanaInicio(),
+                "Error al cargar configuración: " + e.getMessage(),
+                "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    /**
+     * Inicializa la conexión a la base de datos y carga usuarios.
+     */
+    private void inicializarBaseDeDatos() {
+        try {
+            // Establecer conexión
+            conexionBD = ConexionBD.getInstancia(
+                config.getDBUrl(),
+                config.getDBUsuario(),
+                config.getDBPassword(),
+                config.getDBDriver()
+            );
+            
+            controladorVista.agregarLog("Conexión a BD establecida");
+            
+            // Inicializar DAO
+            usuarioDAO = new UsuarioDAOImpl(conexionBD);
+            
+            // Cargar usuarios desde properties
+            Map<String, String> usuarios = config.getUsuariosPrecargados();
+            usuarioDAO.cargarUsuariosDesdeProperties(usuarios);
+            
+            controladorVista.agregarLog("Usuarios cargados: " + usuarios.size());
+            
+        } catch (SQLException | ClassNotFoundException e) {
+            controladorVista.agregarLog("ERROR: No se pudo conectar a la BD");
+            JOptionPane.showMessageDialog(controladorVista.getVentanaInicio(),
+                "Error de base de datos: " + e.getMessage(),
+                "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    /**
+     * Inicia el servidor de sockets.
+     */
+    private void iniciarServidor() {
+        try {
+            int puerto = config.getPuerto();
             serverSocket = new ServerSocket(puerto);
             servidorActivo = true;
             
-            vista.mostrarMensaje("=== SERVIDOR INICIADO ===");
-            vista.mostrarMensaje("Puerto: " + puerto);
-            vista.mostrarMensaje("Esperando conexiones de clientes...");
-            vista.habilitarBotonSalir(true);
+            controladorVista.agregarLog("Servidor escuchando en puerto " + puerto);
+            controladorVista.actualizarEstado("Escuchando conexiones");
             
-            // Iniciar thread para escuchar clientes
-            iniciarEscuchaClientes();
+            // Hilo para escuchar conexiones
+            Thread hiloEscucha = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    escucharConexiones();
+                }
+            });
+            hiloEscucha.start();
             
-        } catch (SQLException e) {
-            vista.mostrarError("Error al conectar con la base de datos: " + e.getMessage());
-        } catch (ClassNotFoundException e) {
-            vista.mostrarError("Driver de MySQL no encontrado: " + e.getMessage());
         } catch (IOException e) {
-            vista.mostrarError("Error al iniciar servidor: " + e.getMessage());
+            controladorVista.agregarLog("ERROR: No se pudo iniciar el servidor");
+            JOptionPane.showMessageDialog(controladorVista.getVentanaInicio(),
+                "Error al iniciar servidor: " + e.getMessage(),
+                "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
     
     /**
-     * Inicializa la conexión a la base de datos.
-     * 
-     * @throws SQLException Si hay error de conexión
-     * @throws ClassNotFoundException Si no encuentra el driver
+     * Escucha conexiones de clientes en un bucle.
      */
-    private void inicializarBaseDatos() throws SQLException, ClassNotFoundException {
-        String url = configuracion.getDBUrl();
-        String usuario = configuracion.getDBUsuario();
-        String password = configuracion.getDBPassword();
-        String driver = configuracion.getDBDriver();
-        
-        conexionBD = ConexionBD.getInstancia(url, usuario, password, driver);
-        usuarioDAO = new UsuarioDAOImpl(conexionBD);
-        
-        vista.mostrarMensaje("Conexión a base de datos establecida");
-    }
-    
-    /**
-     * Carga los usuarios precargados desde properties a la BD.
-     * 
-     * @throws SQLException Si hay error en la carga
-     */
-    private void cargarUsuariosPrecargados() throws SQLException {
-        Map<String, String> usuarios = configuracion.getUsuariosPrecargados();
-        usuarioDAO.cargarUsuariosDesdeProperties(usuarios);
-        vista.mostrarMensaje("Usuarios precargados: " + usuarios.size());
-    }
-    
-    /**
-     * Inicia un thread que escucha conexiones de clientes continuamente.
-     */
-    private void iniciarEscuchaClientes() {
-        Thread threadEscucha = new Thread(() -> {
-            while (servidorActivo) {
-                try {
-                    // Esperar cliente (bloqueante)
-                    Socket socketCliente = serverSocket.accept();
-                    contadorClientes++;
-                    
-                    String infoCliente = socketCliente.getInetAddress().getHostAddress() + 
-                                       ":" + socketCliente.getPort();
-                    vista.mostrarMensaje("\n>>> Cliente #" + contadorClientes + 
-                                       " conectado desde: " + infoCliente);
-                    
-                    // Crear y lanzar thread de atención al cliente
-                    HiloCliente hiloCliente = new HiloCliente(
-                        socketCliente, 
-                        usuarioDAO, 
-                        archivoResultados,
-                        configuracion,
-                        vista,
-                        contadorClientes
-                    );
-                    
-                    Thread thread = new Thread(hiloCliente);
-                    thread.start();
-                    
-                } catch (IOException e) {
-                    if (servidorActivo) {
-                        vista.mostrarError("Error al aceptar cliente: " + e.getMessage());
-                    }
+    private void escucharConexiones() {
+        while (servidorActivo) {
+            try {
+                controladorVista.agregarLog("Esperando cliente...");
+                Socket socketCliente = serverSocket.accept();
+                
+                String ipCliente = socketCliente.getInetAddress().getHostAddress();
+                controladorVista.agregarLog("Cliente conectado desde: " + ipCliente);
+                
+                // Lanzar hilo para atender al cliente
+                HiloClienteServidor hiloCliente = new HiloClienteServidor(
+                    socketCliente,
+                    this,
+                    usuarioDAO,
+                    controladorModelo,
+                    controladorVista,
+                    archivoManager,
+                    config
+                );
+                hiloCliente.start();
+                
+            } catch (IOException e) {
+                if (servidorActivo) {
+                    controladorVista.agregarLog("ERROR: Fallo al aceptar cliente");
                 }
             }
-        });
-        
-        threadEscucha.setDaemon(true);
-        threadEscucha.start();
+        }
     }
     
     /**
-     * Detiene el servidor y muestra el mejor jugador.
-     * Método llamado al presionar el botón "Salir".
+     * Configura el listener del botón Salir en la ventana de juego.
+     * 
+     * @param ventanaJuego Ventana de juego
      */
-    public void detenerServidor() {
+    public void configurarBotonSalirJuego(VentanaJuego ventanaJuego) {
+        ventanaJuego.getBtnSalir().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                mostrarRankingYCerrar();
+            }
+        });
+    }
+    
+    /**
+     * Configura la acción de dibujar en el panel de juego.
+     * Inyecta la lógica desde el ControladorModelo.
+     * 
+     * @param panelJuego Panel donde se dibuja
+     */
+    public void configurarDibujadoJuego(PanelJuego panelJuego) {
+        panelJuego.setAccionDibujar(new Runnable() {
+            @Override
+            public void run() {
+                controladorModelo.dibujarJuego(panelJuego.getGraphics());
+            }
+        });
+    }
+    
+    /**
+     * Muestra el ranking final y cierra el servidor.
+     */
+    private void mostrarRankingYCerrar() {
         try {
-            servidorActivo = false;
+            RegistroJuego mejor = archivoManager.obtenerMejorJugador();
             
-            // Cerrar ServerSocket
-            if (serverSocket != null && !serverSocket.isClosed()) {
-                serverSocket.close();
-                vista.mostrarMensaje("\n=== SERVIDOR DETENIDO ===");
+            String mensaje;
+            if (mejor != null) {
+                mensaje = "=== MEJOR JUGADOR ===\n\n" +
+                         "Nombre: " + mejor.getNombreJugador() + "\n" +
+                         "Puntaje: " + mejor.getPuntaje() + "\n" +
+                         "Tiempo: " + mejor.getTiempoSegundos() + " segundos";
+            } else {
+                mensaje = "No hay registros de juegos.";
             }
             
-            // Mostrar mejor jugador
-            mostrarMejorJugador();
+            JOptionPane.showMessageDialog(null, mensaje,
+                "Ranking Final", JOptionPane.INFORMATION_MESSAGE);
             
-            // Cerrar conexión BD
+            // Cerrar servidor
+            servidorActivo = false;
+            if (serverSocket != null) {
+                serverSocket.close();
+            }
             if (conexionBD != null) {
                 conexionBD.cerrarConexion();
-                vista.mostrarMensaje("Conexión a BD cerrada");
             }
             
-            // Cerrar ventana
-            vista.dispose();
             System.exit(0);
             
         } catch (IOException e) {
-            vista.mostrarError("Error al detener servidor: " + e.getMessage());
+            JOptionPane.showMessageDialog(null,
+                "Error al leer ranking: " + e.getMessage(),
+                "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
     
     /**
-     * Busca y muestra el mejor jugador del archivo de resultados.
-     * Muestra en una ventana emergente.
-     */
-    private void mostrarMejorJugador() {
-        try {
-            if (archivoResultados.estaVacio()) {
-                JOptionPane.showMessageDialog(
-                    vista,
-                    "No hay registros de jugadores",
-                    "Mejor Jugador",
-                    JOptionPane.INFORMATION_MESSAGE
-                );
-                return;
-            }
-            
-            RegistroJuego mejor = archivoResultados.obtenerMejorJugador();
-            
-            String mensaje = String.format(
-                "🏆 MEJOR JUGADOR 🏆\n\n" +
-                "Nombre: %s\n" +
-                "Puntaje: %d puntos\n" +
-                "Tiempo: %d segundos\n\n" +
-                "¡Felicidades!",
-                mejor.getNombreJugador(),
-                mejor.getPuntaje(),
-                mejor.getTiempoSegundos()
-            );
-            
-            JOptionPane.showMessageDialog(
-                vista,
-                mensaje,
-                "Mejor Jugador",
-                JOptionPane.INFORMATION_MESSAGE
-            );
-            
-            vista.mostrarMensaje("\n" + mensaje.replace("🏆 ", "").replace("🏆", ""));
-            
-        } catch (IOException e) {
-            vista.mostrarError("Error al leer archivo de resultados: " + e.getMessage());
-        }
-    }
-    
-    /**
-     * Verifica si el servidor está activo.
+     * Agrega un mensaje al log desde otros componentes.
      * 
-     * @return true si está activo, false en caso contrario
+     * @param mensaje Mensaje a agregar
      */
-    public boolean isServidorActivo() {
-        return servidorActivo;
+    public void agregarLog(String mensaje) {
+        controladorVista.agregarLog(mensaje);
     }
 }

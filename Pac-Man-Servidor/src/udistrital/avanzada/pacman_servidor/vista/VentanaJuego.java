@@ -1,167 +1,139 @@
 package udistrital.avanzada.pacman_servidor.vista;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import javax.swing.BorderFactory;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
-import udistrital.avanzada.pacman_servidor.modelo.Juego;
+import javax.swing.*;
+import java.awt.*;
 
 /**
- * Ventana que muestra el juego de Pac-Man en el servidor.
- * Solo visible en la máquina del servidor, no en el cliente.
- * Contiene el panel de dibujo y panel de información.
+ * Ventana que muestra el juego en ejecución.
+ * Contiene el panel de juego y estadísticas.
  * 
- * @author Steban
+ * @author [Tu Nombre]
  * @version 1.0
  */
 public class VentanaJuego extends JFrame {
     
-    private Juego juego;
     private PanelJuego panelJuego;
     private JLabel lblPuntaje;
     private JLabel lblTiempo;
     private JLabel lblFrutas;
-    private String nombreJugador;
+    private JLabel lblJugador;
+    private JButton btnSalir;
     
     /**
-     * Constructor de la ventana de juego.
+     * Constructor que inicializa la ventana.
      * 
-     * @param juego Modelo del juego
-     * @param nombreJugador Nombre del jugador
+     * @param anchoVentana Ancho del área de juego
+     * @param altoVentana Alto del área de juego
      */
-    public VentanaJuego(Juego juego, String nombreJugador) {
-        this.juego = juego;
-        this.nombreJugador = nombreJugador;
-        
-        inicializarComponentes();
+    public VentanaJuego(int anchoVentana, int altoVentana) {
+        inicializarComponentes(anchoVentana, altoVentana);
         configurarVentana();
     }
     
     /**
-     * Inicializa los componentes gráficos.
+     * Inicializa componentes visuales.
      */
-    private void inicializarComponentes() {
-        // Panel principal
-        JPanel panelPrincipal = new JPanel(new BorderLayout(5, 5));
-        panelPrincipal.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        panelPrincipal.setBackground(Color.BLACK);
+    private void inicializarComponentes(int ancho, int alto) {
+        // Panel de juego (centro)
+        panelJuego = new PanelJuego(ancho, alto);
         
-        // Panel superior con título
-        JPanel panelTitulo = crearPanelTitulo();
+        // Panel de estadísticas (derecha)
+        JPanel panelEstadisticas = new JPanel();
+        panelEstadisticas.setLayout(new BoxLayout(panelEstadisticas, BoxLayout.Y_AXIS));
+        panelEstadisticas.setPreferredSize(new Dimension(200, alto));
+        panelEstadisticas.setBorder(BorderFactory.createTitledBorder("Estadísticas"));
         
-        // Panel del juego (donde se dibuja)
-        panelJuego = new PanelJuego(juego);
-        panelJuego.setPreferredSize(new Dimension(800, 600));
-        panelJuego.setBackground(Color.BLACK);
-        panelJuego.setBorder(BorderFactory.createLineBorder(Color.BLUE, 3));
+        lblJugador = crearLabel("Jugador: ---");
+        lblPuntaje = crearLabel("Puntaje: 0");
+        lblTiempo = crearLabel("Tiempo: 0s");
+        lblFrutas = crearLabel("Frutas: 4");
         
-        // Panel inferior con información
-        JPanel panelInfo = crearPanelInformacion();
+        panelEstadisticas.add(Box.createVerticalStrut(20));
+        panelEstadisticas.add(lblJugador);
+        panelEstadisticas.add(Box.createVerticalStrut(10));
+        panelEstadisticas.add(lblPuntaje);
+        panelEstadisticas.add(Box.createVerticalStrut(10));
+        panelEstadisticas.add(lblTiempo);
+        panelEstadisticas.add(Box.createVerticalStrut(10));
+        panelEstadisticas.add(lblFrutas);
+        panelEstadisticas.add(Box.createVerticalGlue());
+        
+        btnSalir = new JButton("Salir");
+        btnSalir.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panelEstadisticas.add(btnSalir);
+        panelEstadisticas.add(Box.createVerticalStrut(20));
         
         // Agregar componentes
-        panelPrincipal.add(panelTitulo, BorderLayout.NORTH);
-        panelPrincipal.add(panelJuego, BorderLayout.CENTER);
-        panelPrincipal.add(panelInfo, BorderLayout.SOUTH);
-        
-        add(panelPrincipal);
+        add(panelJuego, BorderLayout.CENTER);
+        add(panelEstadisticas, BorderLayout.EAST);
     }
     
     /**
-     * Crea el panel con el título y nombre del jugador.
-     * 
-     * @return Panel del título
+     * Crea un JLabel estilizado.
      */
-    private JPanel crearPanelTitulo() {
-        JPanel panel = new JPanel();
-        panel.setBackground(new Color(25, 25, 112)); // Azul medianoche
-        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        
-        JLabel lblTitulo = new JLabel("PAC-MAN - Jugador: " + nombreJugador);
-        lblTitulo.setFont(new Font("Arial", Font.BOLD, 24));
-        lblTitulo.setForeground(Color.YELLOW);
-        lblTitulo.setHorizontalAlignment(SwingConstants.CENTER);
-        
-        panel.add(lblTitulo);
-        
-        return panel;
+    private JLabel crearLabel(String texto) {
+        JLabel label = new JLabel(texto);
+        label.setFont(new Font("Arial", Font.BOLD, 14));
+        label.setAlignmentX(Component.CENTER_ALIGNMENT);
+        return label;
     }
     
     /**
-     * Crea el panel con información del juego.
-     * 
-     * @return Panel de información
-     */
-    private JPanel crearPanelInformacion() {
-        JPanel panel = new JPanel();
-        panel.setBackground(new Color(25, 25, 112));
-        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        
-        // Etiquetas de información
-        lblPuntaje = crearEtiquetaInfo("Puntaje: 0");
-        lblTiempo = crearEtiquetaInfo("Tiempo: 0s");
-        lblFrutas = crearEtiquetaInfo("Frutas: 4");
-        
-        panel.add(lblPuntaje);
-        panel.add(crearSeparador());
-        panel.add(lblTiempo);
-        panel.add(crearSeparador());
-        panel.add(lblFrutas);
-        
-        return panel;
-    }
-    
-    /**
-     * Crea una etiqueta de información con estilo.
-     * 
-     * @param texto Texto inicial
-     * @return JLabel configurado
-     */
-    private JLabel crearEtiquetaInfo(String texto) {
-        JLabel lbl = new JLabel(texto);
-        lbl.setFont(new Font("Arial", Font.BOLD, 16));
-        lbl.setForeground(Color.WHITE);
-        return lbl;
-    }
-    
-    /**
-     * Crea un separador visual.
-     * 
-     * @return JLabel usado como separador
-     */
-    private JLabel crearSeparador() {
-        JLabel sep = new JLabel(" | ");
-        sep.setFont(new Font("Arial", Font.BOLD, 16));
-        sep.setForeground(Color.YELLOW);
-        return sep;
-    }
-    
-    /**
-     * Configura las propiedades de la ventana.
+     * Configura propiedades de la ventana.
      */
     private void configurarVentana() {
-        setTitle("Pac-Man Server - " + nombreJugador);
-        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        setTitle("Pac-Man - Juego en Ejecución");
         pack();
         setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setResizable(false);
     }
     
+    // ========== Getters ==========
+    
+    public PanelJuego getPanelJuego() {
+        return panelJuego;
+    }
+    
+    public JButton getBtnSalir() {
+        return btnSalir;
+    }
+    
+    // ========== Métodos públicos para actualizar vista ==========
+    
     /**
-     * Repinta el juego y actualiza la información.
-     * Método público para que el controlador pueda actualizar la vista.
+     * Actualiza el nombre del jugador.
      */
-    public void repintar() {
-        // Actualizar información
-        lblPuntaje.setText("Puntaje: " + juego.getPuntajeTotal());
-        lblTiempo.setText("Tiempo: " + juego.getTiempoTranscurrido() + "s");
-        lblFrutas.setText("Frutas: " + juego.getFrutasRestantes());
-        
-        // Repintar panel de juego
-        panelJuego.repaint();
+    public void actualizarJugador(String nombre) {
+        SwingUtilities.invokeLater(() -> {
+            lblJugador.setText("Jugador: " + nombre);
+        });
+    }
+    
+    /**
+     * Actualiza el puntaje mostrado.
+     */
+    public void actualizarPuntaje(int puntaje) {
+        SwingUtilities.invokeLater(() -> {
+            lblPuntaje.setText("Puntaje: " + puntaje);
+        });
+    }
+    
+    /**
+     * Actualiza el tiempo transcurrido.
+     */
+    public void actualizarTiempo(long segundos) {
+        SwingUtilities.invokeLater(() -> {
+            lblTiempo.setText("Tiempo: " + segundos + "s");
+        });
+    }
+    
+    /**
+     * Actualiza las frutas restantes.
+     */
+    public void actualizarFrutas(int cantidad) {
+        SwingUtilities.invokeLater(() -> {
+            lblFrutas.setText("Frutas: " + cantidad);
+        });
     }
 }

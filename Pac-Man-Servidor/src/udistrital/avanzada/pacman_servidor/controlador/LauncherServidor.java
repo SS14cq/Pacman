@@ -1,8 +1,6 @@
 package udistrital.avanzada.pacman_servidor.controlador;
 
-import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import udistrital.avanzada.pacman_servidor.vista.VentanaServidor;
 
 /**
  * Clase principal del Servidor Pac-Man. Punto de entrada de la aplicación.
@@ -13,19 +11,17 @@ import udistrital.avanzada.pacman_servidor.vista.VentanaServidor;
 public class LauncherServidor {
 
     /**
-     * Método principal que inicia el servidor.
-     *
-     * @param args Argumentos de línea de comandos (no utilizados)
+     * Método principal.
+     * 
+     * @param args Argumentos de línea de comandos (no usados)
      */
     public static void main(String[] args) {
-        // Configurar Look and Feel del sistema
-        configurarLookAndFeel();
-
-        // Iniciar interfaz en el EDT (Event Dispatch Thread)
-        SwingUtilities.invokeLater(() -> {
-            VentanaServidor ventana = new VentanaServidor();
-            ventana.setVisible(true);
-        });
+        // Instanciar el orquestador
+        ControladorServidor controlador = new ControladorServidor();
+        
+        // Iniciar la aplicación
+        controlador.iniciar();
+        
     }
 
     /**
