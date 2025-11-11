@@ -8,6 +8,8 @@ import udistrital.avanzada.pacman_servidor.modelo.RegistroJuego;
 /**
  * Clase de prueba para verificar el funcionamiento del archivo de acceso aleatorio.
  * NO es parte del proyecto final, solo para testing.
+ * @author Steban
+ * @version 1.0
  */
 public class PruebaArchivoResultados {
     

@@ -39,45 +39,45 @@ INSERT INTO usuarios (nombre, password) VALUES
 -- Verificar creación
 -- ============================================
 SELECT * FROM usuarios;
-```
-
-Crea también `data/README_BD.txt`:
-```
-============================================
-CONFIGURACIÓN DE BASE DE DATOS - PAC-MAN
-============================================
-
-1. REQUISITOS:
-   - MySQL Server 8.0 o superior
-   - Puerto: 3306 (por defecto)
-
-2. INSTALACIÓN:
-   
-   a) Ejecutar el script:
-      mysql -u root -p < script_bd.sql
-   
-   b) O desde MySQL Workbench:
-      - Abrir script_bd.sql
-      - Ejecutar (Ctrl + Shift + Enter)
-
-3. CREDENCIALES:
-   
-   Usuario BD: root
-   Password BD: (tu password de MySQL)
-   Base de Datos: pacman_db
-   Puerto: 3306
-
-4. USUARIOS DE PRUEBA:
-   
-   nombre: jugador1 | password: pass1
-   nombre: jugador2 | password: pass2
-   nombre: jugador3 | password: pass3
-   nombre: admin    | password: admin123
-
-5. VERIFICACIÓN:
-   
-   mysql -u root -p
-   USE pacman_db;
-   SELECT * FROM usuarios;
-
-============================================
+-- ```
+-- 
+-- Crea también `data/README_BD.txt`:
+-- ```
+-- ============================================
+-- CONFIGURACIÓN DE BASE DE DATOS - PAC-MAN
+-- ============================================
+-- 
+-- 1. REQUISITOS:
+--    - MySQL Server 8.0 o superior
+--    - Puerto: 3306 (por defecto)
+-- 
+-- 2. INSTALACIÓN:
+--    
+--    a) Ejecutar el script:
+--       mysql -u root -p < script_bd.sql
+--    
+--    b) O desde MySQL Workbench:
+--       - Abrir script_bd.sql
+--       - Ejecutar (Ctrl + Shift + Enter)
+-- 
+-- 3. CREDENCIALES:
+--    
+--    Usuario BD: root
+--    Password BD: (tu password de MySQL)
+--    Base de Datos: pacman_db
+--    Puerto: 3306
+-- 
+-- 4. USUARIOS DE PRUEBA:
+--    
+--    nombre: jugador1 | password: pass1
+--    nombre: jugador2 | password: pass2
+--    nombre: jugador3 | password: pass3
+--    nombre: admin    | password: admin123
+-- 
+-- 5. VERIFICACIÓN:
+--    
+--    mysql -u root -p
+--    USE pacman_db;
+--    SELECT * FROM usuarios;
+-- 
+-- ============================================

@@ -7,7 +7,7 @@ import java.awt.event.ActionListener;
  * Listener para el botón de salir del servidor.
  * Separa el manejo de eventos según las buenas prácticas de MVC.
  * 
- * @author Jhon Herrera Cubides
+ * @author Steban
  * @version 1.0
  */
 public class ListenerBotonSalir implements ActionListener {

@@ -7,7 +7,7 @@ import udistrital.avanzada.pacman_servidor.modelo.*;
  * Fábrica para crear frutas aleatoriamente.
  * Aplica patrón Factory para desacoplar creación de uso.
  * 
- * @author [Tu Nombre]
+ * @author Steban
  * @version 1.0
  */
 public class FabricaFrutas {

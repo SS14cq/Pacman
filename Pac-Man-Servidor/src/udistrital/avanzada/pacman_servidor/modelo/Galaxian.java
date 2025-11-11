@@ -7,7 +7,7 @@ import java.awt.Graphics;
  * Representa el símbolo Galaxian (2000 puntos).
  * Referencia al juego clásico de arcade.
  * 
- * @author [Tu Nombre]
+ * @author Steban
  * @version 1.0
  */
 public class Galaxian extends Fruta {

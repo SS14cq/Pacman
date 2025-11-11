@@ -21,7 +21,7 @@ import udistrital.avanzada.pacman_servidor.vista.VentanaServidor;
  * Maneja autenticación, juego y comunicación por socket.
  * Cada cliente tiene su propio thread de atención.
  * 
- * @author Jhon Herrera Cubides
+ * @author Steban
  * @version 1.0
  */
 public class HiloCliente implements Runnable {

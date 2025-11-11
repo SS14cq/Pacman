@@ -19,7 +19,7 @@ import udistrital.avanzada.pacman_servidor.vista.VentanaServidor;
  * Gestiona el ServerSocket, acepta clientes y coordina toda la lógica del servidor.
  * Aplica el patrón MVC: separa lógica de control de vista y modelo.
  * 
- * @author Jhon Herrera Cubides
+ * @author Steban
  * @version 1.0
  */
 public class ControladorServidor {

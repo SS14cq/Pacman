@@ -8,7 +8,7 @@ import java.sql.SQLException;
  * Gestiona la conexión única a la base de datos MySQL.
  * Implementa patrón Singleton para evitar múltiples conexiones.
  * 
- * @author [Tu Nombre]
+ * @author Steban
  * @version 1.0
  */
 public class ConexionBD {

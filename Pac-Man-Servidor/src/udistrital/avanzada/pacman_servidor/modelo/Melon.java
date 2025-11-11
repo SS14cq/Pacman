@@ -6,7 +6,7 @@ import java.awt.Graphics;
 /**
  * Representa un melón (1000 puntos).
  * 
- * @author [Tu Nombre]
+ * @author Steban
  * @version 1.0
  */
 public class Melon extends Fruta {

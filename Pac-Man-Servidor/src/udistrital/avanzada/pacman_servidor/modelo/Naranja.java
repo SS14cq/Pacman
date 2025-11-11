@@ -6,7 +6,7 @@ import java.awt.Graphics;
 /**
  * Representa una naranja (500 puntos).
  * 
- * @author [Tu Nombre]
+ * @author Steban
  * @version 1.0
  */
 public class Naranja extends Fruta {

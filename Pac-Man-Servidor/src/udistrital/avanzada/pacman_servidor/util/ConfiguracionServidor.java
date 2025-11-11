@@ -11,7 +11,7 @@ import java.util.Properties;
  * Gestiona la carga y acceso a la configuración del servidor.
  * Lee el archivo properties y proporciona métodos para obtener valores.
  * 
- * @author [Tu Nombre]
+ * @author Steban
  * @version 1.0
  */
 public class ConfiguracionServidor {

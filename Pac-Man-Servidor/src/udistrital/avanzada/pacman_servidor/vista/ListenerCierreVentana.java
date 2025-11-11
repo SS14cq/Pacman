@@ -7,7 +7,7 @@ import java.awt.event.WindowEvent;
  * Listener para el evento de cierre de ventana (X).
  * Maneja el cierre apropiado del servidor.
  * 
- * @author Jhon Herrera Cubides
+ * @author Steban
  * @version 1.0
  */
 public class ListenerCierreVentana extends WindowAdapter {

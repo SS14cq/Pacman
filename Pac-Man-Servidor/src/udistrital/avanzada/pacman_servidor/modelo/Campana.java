@@ -6,7 +6,7 @@ import java.awt.Graphics;
 /**
  * Representa una campana (3000 puntos).
  * 
- * @author [Tu Nombre]
+ * @author Steban
  * @version 1.0
  */
 public class Campana extends Fruta {

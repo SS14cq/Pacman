@@ -4,7 +4,7 @@ package udistrital.avanzada.pacman_servidor.modelo;
  * DTO que encapsula el resultado de un movimiento de Pac-Man.
  * Permite comunicar información sin violar Ley de Demeter.
  * 
- * @author [Tu Nombre]
+ * @author Steban
  * @version 1.0
  */
 public class ResultadoMovimiento {

@@ -9,7 +9,7 @@ import udistrital.avanzada.pacman_servidor.modelo.Juego;
  * Delega el dibujado al modelo del juego.
  * Respeta el principio de separación: Vista solo dibuja, no conoce lógica.
  * 
- * @author Jhon Herrera Cubides
+ * @author Steban
  * @version 1.0
  */
 public class PanelJuego extends JPanel {

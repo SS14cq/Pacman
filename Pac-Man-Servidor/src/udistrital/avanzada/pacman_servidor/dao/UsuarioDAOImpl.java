@@ -11,7 +11,7 @@ import udistrital.avanzada.pacman_servidor.conexion.ConexionBD;
  * Implementación del DAO para usuarios.
  * Gestiona todas las operaciones de BD relacionadas con usuarios.
  * 
- * @author [Tu Nombre]
+ * @author Steban
  * @version 1.0
  */
 public class UsuarioDAOImpl implements UsuarioDAO {

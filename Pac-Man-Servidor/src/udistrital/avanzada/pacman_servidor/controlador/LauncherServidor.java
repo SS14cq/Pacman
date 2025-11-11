@@ -7,7 +7,7 @@ import udistrital.avanzada.pacman_servidor.vista.VentanaServidor;
 /**
  * Clase principal del Servidor Pac-Man. Punto de entrada de la aplicación.
  *
- * @author Jhon Herrera Cubides
+ * @author Steban
  * @version 1.0
  */
 public class LauncherServidor {

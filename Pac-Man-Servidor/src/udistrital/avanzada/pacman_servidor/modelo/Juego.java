@@ -9,7 +9,7 @@ import udistrital.avanzada.pacman_servidor.util.FabricaFrutas;
  * Clase principal que gestiona la lógica del juego Pac-Man.
  * Coordina Pac-Man, frutas y reglas del juego.
  * 
- * @author [Tu Nombre]
+ * @author Steban
  * @version 1.0
  */
 public class Juego {

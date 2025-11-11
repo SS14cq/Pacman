@@ -4,7 +4,7 @@ package udistrital.avanzada.pacman_servidor.modelo;
  * Enumeración que representa los tipos de mensajes del protocolo de comunicación
  * entre cliente y servidor. Cada tipo tiene un código corto para transmisión eficiente.
  * 
- * @author [Tu Nombre]
+ * @author Steban
  * @version 1.0
  */
 public enum TipoMensaje {

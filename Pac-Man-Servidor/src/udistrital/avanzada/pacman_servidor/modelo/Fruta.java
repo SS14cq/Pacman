@@ -6,7 +6,7 @@ import java.awt.Graphics;
  * Clase abstracta que representa una fruta del juego.
  * Aplica OCP: abierta para extensión (nuevas frutas), cerrada para modificación.
  * 
- * @author [Tu Nombre]
+ * @author Steban
  * @version 1.0
  */
 public abstract class Fruta {

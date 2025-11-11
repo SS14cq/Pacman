@@ -11,7 +11,7 @@ import udistrital.avanzada.pacman_servidor.modelo.RegistroJuego;
  * Gestiona el archivo de acceso aleatorio para almacenar resultados de juegos.
  * Implementa operaciones de lectura, escritura y búsqueda en el archivo.
  * 
- * @author [Tu Nombre]
+ * @author Steban
  * @version 1.0
  */
 public class ArchivoResultadosManager {

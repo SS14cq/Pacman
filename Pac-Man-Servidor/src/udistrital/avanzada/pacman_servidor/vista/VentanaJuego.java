@@ -16,7 +16,7 @@ import udistrital.avanzada.pacman_servidor.modelo.Juego;
  * Solo visible en la máquina del servidor, no en el cliente.
  * Contiene el panel de dibujo y panel de información.
  * 
- * @author Jhon Herrera Cubides
+ * @author Steban
  * @version 1.0
  */
 public class VentanaJuego extends JFrame {

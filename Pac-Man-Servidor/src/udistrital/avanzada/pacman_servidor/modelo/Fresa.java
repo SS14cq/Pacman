@@ -6,7 +6,7 @@ import java.awt.Graphics;
 /**
  * Representa una fresa (300 puntos).
  * 
- * @author [Tu Nombre]
+ * @author Steban
  * @version 1.0
  */
 public class Fresa extends Fruta {

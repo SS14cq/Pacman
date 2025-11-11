@@ -6,7 +6,7 @@ import java.io.Serializable;
  * Representa un registro de juego con información del jugador.
  * Estructura fija para almacenamiento en archivo de acceso aleatorio.
  * 
- * @author [Tu Nombre]
+ * @author Steban
  * @version 1.0
  */
 public class RegistroJuego implements Serializable {

@@ -5,6 +5,8 @@ import java.awt.Graphics;
 
 /**
  * Representa una llave (5000 puntos).
+ * @author Steban
+ * @version 1.0
  */
 public class Llave extends Fruta {
     

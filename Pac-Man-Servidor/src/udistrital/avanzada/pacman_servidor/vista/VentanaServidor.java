@@ -23,7 +23,7 @@ import udistrital.avanzada.pacman_servidor.util.ConfiguracionServidor;
  * Muestra log de eventos y botón de salida.
  * Aplica separación de eventos con clases listener independientes.
  * 
- * @author Jhon Herrera Cubides
+ * @author Steban
  * @version 1.0
  */
 public class VentanaServidor extends JFrame {

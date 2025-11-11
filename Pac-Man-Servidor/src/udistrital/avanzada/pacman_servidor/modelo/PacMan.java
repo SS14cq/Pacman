@@ -8,7 +8,7 @@ import java.awt.Graphics;
  * Encapsula su posición, tamaño y comportamiento de movimiento.
  * Respeta el principio de Ley de Demeter al manejar internamente su estado.
  * 
- * @author [Tu Nombre]
+ * @author Steban
  * @version 1.0
  */
 public class PacMan {

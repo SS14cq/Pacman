@@ -8,7 +8,7 @@ import java.util.Map;
  * Define el contrato para acceso a datos de usuarios.
  * Aplica Dependency Inversion Principle (SOLID-D).
  * 
- * @author [Tu Nombre]
+ * @author Steban
  * @version 1.0
  */
 public interface UsuarioDAO {
