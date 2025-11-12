@@ -21,7 +21,7 @@ import udistrital.avanzada.pacman_servidor.vista.VentanaJuego;
  * Orquesta TODA la aplicación: vista, modelo, BD, sockets.
  * Es la VERTEBRA CENTRAL del sistema.
  * 
- * @author [Tu Nombre]
+ * @author Steban
  * @version 1.0
  */
 public class ControladorServidor {

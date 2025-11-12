@@ -8,7 +8,7 @@ import java.awt.*;
  * Permite seleccionar archivo properties e iniciar el servidor.
  * NO contiene lógica, solo componentes visuales.
  * 
- * @author [Tu Nombre]
+ * @author Steban
  * @version 1.0
  */
 public class VentanaInicioServidor extends JFrame {
@@ -68,7 +68,7 @@ public class VentanaInicioServidor extends JFrame {
      * Configura las propiedades de la ventana.
      */
     private void configurarVentana() {
-        setTitle("Servidor Pac-Man - Configuración");
+        setTitle("Servidor Pac-Man");
         setSize(700, 500);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

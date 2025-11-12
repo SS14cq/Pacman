@@ -10,7 +10,7 @@ import udistrital.avanzada.pacman_servidor.modelo.TipoMensaje;
  * Hilo que captura y envía frames de video continuamente.
  * Controla FPS y compresión para el streaming.
  * 
- * @author [Tu Nombre]
+ * @author Steban
  * @version 1.0
  */
 public class HiloEnvioFrames extends Thread {

@@ -10,7 +10,7 @@ package udistrital.avanzada.pacman_cliente.modelo;
  * - No conoce cómo se muestra (Vista)
  * - No conoce cómo se conecta (ConexionServidor)
  * 
- * @author Equipo Desarrollo
+ * @author Steban
  * @version 1.0
  */
 public class EstadoCliente {

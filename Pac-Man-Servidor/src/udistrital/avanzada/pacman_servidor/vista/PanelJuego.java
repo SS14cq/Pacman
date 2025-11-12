@@ -7,7 +7,7 @@ import java.awt.*;
  * Panel donde se dibuja el juego de Pac-Man.
  * Solo responsable de renderizar, no tiene lógica.
  * 
- * @author [Tu Nombre]
+ * @author Steban
  * @version 1.0
  */
 public class PanelJuego extends JPanel {

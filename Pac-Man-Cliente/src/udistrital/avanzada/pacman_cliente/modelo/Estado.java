@@ -4,7 +4,8 @@ package udistrital.avanzada.pacman_cliente.modelo;
 /**
  * Estados posibles del cliente
  *
- * @author juan-
+ * @author Steban
+ * @version 1.0
  */
 public enum Estado {
     
@@ -12,5 +13,6 @@ public enum Estado {
     CONECTANDO,
     AUTENTICANDO,
     JUGANDO,
+    ESPERANDO_INICIO,
     JUEGO_TERMINADO
 }

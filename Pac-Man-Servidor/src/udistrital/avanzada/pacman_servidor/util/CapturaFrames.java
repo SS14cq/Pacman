@@ -16,7 +16,7 @@ import java.util.Iterator;
  * Utilidad para capturar y comprimir frames de un JPanel.
  * Convierte el contenido visual a imágenes JPEG comprimidas.
  * 
- * @author [Tu Nombre]
+ * @author Steban
  * @version 1.0
  */
 public class CapturaFrames {

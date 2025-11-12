@@ -7,7 +7,7 @@ import java.awt.*;
  * Ventana que muestra el juego en ejecución.
  * Contiene el panel de juego y estadísticas.
  * 
- * @author [Tu Nombre]
+ * @author Steban
  * @version 1.0
  */
 public class VentanaJuego extends JFrame {

@@ -16,6 +16,8 @@ public class LauncherServidor {
      * @param args Argumentos de línea de comandos (no usados)
      */
     public static void main(String[] args) {
+        
+        configurarLookAndFeel();
         // Instanciar el orquestador
         ControladorServidor controlador = new ControladorServidor();
         

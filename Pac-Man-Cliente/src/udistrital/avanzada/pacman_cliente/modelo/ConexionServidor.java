@@ -1,113 +1,78 @@
 package udistrital.avanzada.pacman_cliente.modelo;
 
-import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.Socket;
 
 /**
  * Clase que encapsula la conexión con el servidor.
- * NO tiene dependencias de vista.
- * Solo maneja comunicación por socket.
- * 
- * PRINCIPIO: Single Responsibility
- * - Solo maneja la conexión y comunicación socket
- * - No conoce el orquestador (usa callback)
- * - No conoce la vista
- * 
- * PATRÓN: Callback (Listener) para notificar mensajes recibidos
- * 
- * @author Equipo Desarrollo
+ * MODIFICADA para usar DataInputStream/DataOutputStream
+ * Compatible con el servidor.
+ * @author Steban
  * @version 1.0
  */
 public class ConexionServidor {
     
-    /**
-     * Interfaz para callback de mensajes recibidos.
-     * El orquestador implementará esta interfaz.
-     */
     public interface MensajeListener {
-        /**
-         * Llamado cuando se recibe un mensaje del servidor.
-         * 
-         * @param mensaje Mensaje recibido
-         */
         void onMensajeRecibido(String mensaje);
-        
-        /**
-         * Llamado cuando hay un error de conexión.
-         * 
-         * @param error Descripción del error
-         */
         void onError(String error);
-        
-        /**
-         * Llamado cuando la conexión se cierra.
-         */
         void onConexionCerrada();
     }
     
+    public interface FrameListener {
+        void onFrameRecibido(byte[] frameBytes);
+    }
+    
     private Socket socket;
-    private BufferedReader entrada;
-    private PrintWriter salida;
+    private DataInputStream entrada;
+    private DataOutputStream salida;
     private boolean conectado;
     private MensajeListener listener;
+    private FrameListener frameListener;
     private Thread threadEscucha;
     
-    /**
-     * Constructor.
-     */
     public ConexionServidor() {
         this.conectado = false;
     }
     
-    /**
-     * Establece el listener para notificaciones.
-     * 
-     * @param listener Listener a notificar
-     */
     public void setMensajeListener(MensajeListener listener) {
         this.listener = listener;
     }
     
-    /**
-     * Conecta al servidor.
-     * 
-     * @param ip Dirección IP del servidor
-     * @param puerto Puerto del servidor
-     * @throws IOException Si hay error de conexión
-     */
+    public void setFrameListener(FrameListener listener) {
+        this.frameListener = listener;
+    }
+    
     public void conectar(String ip, int puerto) throws IOException {
         if (conectado) {
             throw new IllegalStateException("Ya existe una conexión activa");
         }
         
-        // Crear socket
         socket = new Socket(ip, puerto);
-        
-        // Crear streams
-        entrada = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        salida = new PrintWriter(socket.getOutputStream(), true);
-        
+        entrada = new DataInputStream(socket.getInputStream());
+        salida = new DataOutputStream(socket.getOutputStream());
         conectado = true;
         
-        // Iniciar thread de escucha
         iniciarEscucha();
     }
     
-    /**
-     * Inicia un thread que escucha mensajes del servidor.
-     */
     private void iniciarEscucha() {
         threadEscucha = new Thread(() -> {
             try {
-                String linea;
-                while (conectado && (linea = entrada.readLine()) != null) {
-                    // Notificar al listener (orquestador)
-                    if (listener != null) {
-                        final String mensaje = linea;
-                        listener.onMensajeRecibido(mensaje);
+                while (conectado) {
+                    // Leer tipo de mensaje
+                    String tipo = entrada.readUTF();
+                    
+                    if ("FRAME_VIDEO".equals(tipo)) {
+                        recibirFrame();
+                    } else {
+                        // Leer contenido del mensaje
+                        String contenido = entrada.readUTF();
+                        
+                        if (listener != null) {
+                            listener.onMensajeRecibido(contenido);
+                        }
                     }
                 }
             } catch (IOException e) {
@@ -128,59 +93,50 @@ public class ConexionServidor {
         threadEscucha.start();
     }
     
-    /**
-     * Envía un mensaje al servidor.
-     * 
-     * @param mensaje Mensaje a enviar
-     * @throws IOException Si hay error de envío
-     */
+    private void recibirFrame() {
+        try {
+            int tamaño = entrada.readInt();
+            byte[] frameBytes = new byte[tamaño];
+            entrada.readFully(frameBytes);
+            
+            if (frameListener != null) {
+                frameListener.onFrameRecibido(frameBytes);
+            }
+        } catch (IOException e) {
+            if (conectado && listener != null) {
+                listener.onError("Error al recibir frame: " + e.getMessage());
+            }
+        }
+    }
+    
     public void enviarMensaje(String mensaje) throws IOException {
         if (!conectado) {
             throw new IllegalStateException("No hay conexión activa");
         }
         
-        if (salida == null) {
-            throw new IOException("Stream de salida no inicializado");
+        synchronized (salida) {
+            salida.writeUTF("CMD");
+            salida.writeUTF(mensaje);
+            salida.flush();
         }
-        
-        salida.println(mensaje);
     }
     
-    /**
-     * Desconecta del servidor.
-     */
     public void desconectar() {
         conectado = false;
         
         try {
-            if (entrada != null) {
-                entrada.close();
-            }
-            if (salida != null) {
-                salida.close();
-            }
-            if (socket != null && !socket.isClosed()) {
-                socket.close();
-            }
+            if (entrada != null) entrada.close();
+            if (salida != null) salida.close();
+            if (socket != null && !socket.isClosed()) socket.close();
         } catch (IOException e) {
-            // Ignorar errores al cerrar
+            // Ignorar
         }
     }
     
-    /**
-     * Verifica si está conectado.
-     * 
-     * @return true si está conectado
-     */
     public boolean isConectado() {
         return conectado && socket != null && !socket.isClosed();
     }
     
-    /**
-     * Obtiene la dirección del servidor conectado.
-     * 
-     * @return Dirección IP o null si no está conectado
-     */
     public String getDireccionServidor() {
         if (socket != null && !socket.isClosed()) {
             return socket.getInetAddress().getHostAddress();
@@ -188,11 +144,6 @@ public class ConexionServidor {
         return null;
     }
     
-    /**
-     * Obtiene el puerto del servidor conectado.
-     * 
-     * @return Puerto o -1 si no está conectado
-     */
     public int getPuertoServidor() {
         if (socket != null && !socket.isClosed()) {
             return socket.getPort();

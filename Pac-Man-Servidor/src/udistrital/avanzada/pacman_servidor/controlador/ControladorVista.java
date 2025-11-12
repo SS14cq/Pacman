@@ -8,7 +8,7 @@ import udistrital.avanzada.pacman_servidor.vista.VentanaJuego;
  * NO conoce el modelo, NO toma decisiones de negocio.
  * Solo actúa como puente entre ControladorServidor y las ventanas.
  * 
- * @author 
+ * @author Steban
  * @version 1.0
  */
 public class ControladorVista {

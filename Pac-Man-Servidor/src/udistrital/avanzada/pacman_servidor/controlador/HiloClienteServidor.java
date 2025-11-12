@@ -17,7 +17,7 @@ import udistrital.avanzada.pacman_servidor.vista.*;
  * Hilo que atiende a un cliente conectado.
  * Gestiona autenticación, juego y cierre de sesión.
  * 
- * @author [Tu Nombre]
+ * @author Steban
  * @version 1.0
  */
 public class HiloClienteServidor extends Thread {

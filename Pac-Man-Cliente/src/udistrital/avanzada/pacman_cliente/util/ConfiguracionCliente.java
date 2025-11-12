@@ -12,7 +12,7 @@ import java.util.Properties;
  * PRINCIPIO: Single Responsibility
  * - Solo lee y proporciona acceso a la configuración
  * 
- * @author Equipo Desarrollo
+ * @author Steban
  * @version 1.0
  */
 public class ConfiguracionCliente {

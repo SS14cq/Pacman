@@ -8,7 +8,7 @@ import udistrital.avanzada.pacman_servidor.modelo.*;
  * Encapsula operaciones del modelo y evita que el ControladorServidor
  * conozca detalles internos de Juego, PacMan, etc.
  * 
- * @author [Tu Nombre]
+ * @author Steban
  * @version 1.0
  */
 public class ControladorModelo {
